@@ -1,0 +1,6 @@
+[submodule "rust"]
+	path = rust
+	url = git@github.com:eholk/rust.git
+[submodule "rust-opencl"]
+	path = rust-opencl
+	url = git://github.com/eholk/rust-opencl.git
