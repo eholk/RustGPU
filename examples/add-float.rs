@@ -6,7 +6,7 @@ fn main() {
     let kernel_name = "_ZN9add_float17_5ac86b11d5cd66c13_00E";
 
     let platforms = get_platforms();
-    let devices = get_devices(platforms[0]);
+    let devices = platforms[0].get_devices();
     let context = create_context(devices[0]);
     let q = create_commandqueue(&context, devices[0]);
 
@@ -19,7 +19,8 @@ fn main() {
                            CL_MEM_READ_ONLY);
     let Bb = create_buffer(&context,
                            sys::size_of::<float>() as int,
-                           CL_MEM_READ_ONLY);
+                   
+        CL_MEM_READ_ONLY);
     let Cb = create_buffer(&context,
                            sys::size_of::<float>() as int,
                            CL_MEM_READ_ONLY);
