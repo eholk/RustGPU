@@ -36,11 +36,11 @@ fn main() {
 
     let kernel = create_kernel(&program, kernel_name);
 
-    set_kernel_arg(&kernel, 0, &ptr::null::<libc::c_void>());
-    set_kernel_arg(&kernel, 1, &ptr::null::<libc::c_void>());
-    set_kernel_arg(&kernel, 2, &Ab);
-    set_kernel_arg(&kernel, 3, &Bb);
-    set_kernel_arg(&kernel, 4, &Cb);    
+    kernel.set_arg(0, &ptr::null::<libc::c_void>());
+    kernel.set_arg(1, &ptr::null::<libc::c_void>());
+    kernel.set_arg(2, &Ab);
+    kernel.set_arg(3, &Bb);
+    kernel.set_arg(4, &Cb);    
 
     enqueue_nd_range_kernel(&q, &kernel, 1, 0, 1 as int, 1);
 

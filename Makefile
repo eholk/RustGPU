@@ -19,5 +19,5 @@ rustc: submodules
 libOpenCL: submodules
 	make -C rust-opencl RUSTC=$(RUSTC)
 
-build-examples: libOpenCL
+build-examples:
 	make -C examples RUSTC=$(RUSTC) ROOT=$(ROOT)
