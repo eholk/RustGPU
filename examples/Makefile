@@ -1,6 +1,6 @@
 
 .phony: all
-all: add-float thread-id
+all: add-float thread-id add-vector
 
 .SECONDARY:
 
