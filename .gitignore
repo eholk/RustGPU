@@ -2,3 +2,4 @@
 *.ptx
 add-float
 thread-id
+add-vector
