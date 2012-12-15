@@ -5,38 +5,34 @@ use OpenCL::CL::*;
 fn main() {
     let kernel_name = "_ZN7set_tid15_84ca2935319eba3_00E";
 
-    let platforms = get_platforms();
-
-    info!("Selected platform %s", platforms[0].name());
-
-    let devices = platforms[0].get_devices();
-    let context = create_context(devices[0]);
-    let q = create_commandqueue(&context, devices[0]);
+    let ctx = create_compute_context();
+    let context = &ctx.ctx;
+    let q = &ctx.q;
 
     let A = ~[1f];
     let B = ~[2f];
     let C = ~[mut 0f];
 
-    let Ab = create_buffer(&context,
+    let Ab = create_buffer(context,
                            sys::size_of::<float>() as int,
                            CL_MEM_READ_ONLY);
-    let Bb = create_buffer(&context,
+    let Bb = create_buffer(context,
                            sys::size_of::<float>() as int,
                    
         CL_MEM_READ_ONLY);
-    let Cb = create_buffer(&context,
+    let Cb = create_buffer(context,
                            sys::size_of::<float>() as int,
                            CL_MEM_READ_ONLY);
     
-    enqueue_write_buffer(&q, &Ab, &A);
-    enqueue_write_buffer(&q, &Bb, &B);
+    enqueue_write_buffer(q, &Ab, &A);
+    enqueue_write_buffer(q, &Bb, &B);
 
     let program = create_program_with_binary(
-        &context,
-        devices[0],
+        context,
+        ctx.device,
         &path::Path("thread-id-kernel.ptx"));
 
-    build_program(&program, devices[0]);
+    build_program(&program, ctx.device);
 
     let kernel = create_kernel(&program, kernel_name);
 
@@ -46,9 +42,9 @@ fn main() {
     kernel.set_arg(3, &Bb);
     kernel.set_arg(4, &Cb);    
 
-    enqueue_nd_range_kernel(&q, &kernel, 1, 0, 8, 8);
+    enqueue_nd_range_kernel(q, &kernel, 1, 0, 8, 8);
 
-    enqueue_read_buffer(&q, &Cb, &C);
+    enqueue_read_buffer(q, &Cb, &C);
 
     io::println(fmt!("Result: %?", C));
 }
