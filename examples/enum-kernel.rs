@@ -1,3 +1,4 @@
+extern mod OpenCL;
 mod common;
 
 use common::*;

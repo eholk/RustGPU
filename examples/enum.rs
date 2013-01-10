@@ -1,15 +1,16 @@
 extern mod OpenCL;
 use OpenCL::hl::*;
 use OpenCL::CL::*;
+use OpenCL::vector::Vector;
 
 mod common;
 
 use common::*;
 
 fn main() {
-    let kernel_name = "_ZN8even_odd17_22ab609848a5fcaa3_00E";
+    let kernel_name = "_ZN8even_odd16_4832a616ac265ea3_00E";
 
-    let ctx = create_compute_context();
+    let ctx = create_compute_context_types([GPU]);
     let context = &ctx.ctx;
     let q = &ctx.q;
 
@@ -17,20 +18,10 @@ fn main() {
     let B = ~[Int(18)];
     let C = ~[mut Unknown];
 
-    let Ab = create_buffer(context,
-                           sys::size_of::<IntOrFloat>() as int,
-                           CL_MEM_READ_ONLY);
-    let Bb = create_buffer(context,
-                           sys::size_of::<IntOrFloat>() as int,
-                   
-        CL_MEM_READ_ONLY);
-    let Cb = create_buffer(context,
-                           sys::size_of::<EvenOdd>() as int,
-                           CL_MEM_READ_ONLY);
+    let Ab = Vector::from_vec(ctx, A);
+    let Bb = Vector::from_vec(ctx, B);
+    let Cb = Vector::from_vec(ctx, C);
     
-    enqueue_write_buffer(q, &Ab, &A);
-    enqueue_write_buffer(q, &Bb, &B);
-
     let program = create_program_with_binary(
         context,
         ctx.device,
@@ -41,27 +32,29 @@ fn main() {
     let kernel = create_kernel(&program, kernel_name);
 
     {
-        kernel.set_arg(0, &ptr::null::<libc::c_void>());
-        kernel.set_arg(1, &ptr::null::<libc::c_void>());
+        kernel.set_arg(0, &0);
+        kernel.set_arg(1, &0);
         kernel.set_arg(2, &Ab);
         kernel.set_arg(3, &Cb);    
         
         enqueue_nd_range_kernel(q, &kernel, 1, 0, 8, 8);
         
-        enqueue_read_buffer(q, &Cb, &C);
+        let C = Cb.to_vec();
         
         io::println(fmt!("Result: %? => %?", A, C));
     }
 
+    let Cb = Vector::from_vec(ctx, C);
+
     {
-        kernel.set_arg(0, &ptr::null::<libc::c_void>());
-        kernel.set_arg(1, &ptr::null::<libc::c_void>());
+        kernel.set_arg(0, &0);
+        kernel.set_arg(1, &0);
         kernel.set_arg(2, &Bb);
         kernel.set_arg(3, &Cb);    
         
         enqueue_nd_range_kernel(q, &kernel, 1, 0, 8, 8);
         
-        enqueue_read_buffer(q, &Cb, &C);
+        let C = Cb.to_vec();
         
         io::println(fmt!("Result: %? => %?", B, C));
     }
