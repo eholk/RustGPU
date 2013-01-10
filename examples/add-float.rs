@@ -6,9 +6,11 @@ use OpenCL::vector::Vector;
 fn main() {
     let kernel_name = "_ZN9add_float17_5ac86b11d5cd66c13_00E";
 
-    let ctx = create_compute_context();
+    let ctx = create_compute_context_types([GPU]);
     let context = &ctx.ctx;
     let q = &ctx.q;
+
+    io::println(fmt!("Selected device %s", ctx.device_name()));
 
     let A = ~[1f];
     let B = ~[2f];
