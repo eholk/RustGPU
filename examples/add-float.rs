@@ -35,7 +35,7 @@ fn main() {
 
     enqueue_nd_range_kernel(q, &kernel, 1, 0, 1 as int, 1);
 
-    let C = Cb.to_vec();
+    let C = (move Cb).to_vec();
 
     io::println(fmt!("%? + %? = %?", A, B, C));
 }
