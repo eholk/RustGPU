@@ -1,6 +1,8 @@
 
+EXAMPLES = add-float #thread-id add-vector enum
+
 .phony: all
-all: add-float #thread-id add-vector enum
+all: $(EXAMPLES)
 
 .SECONDARY:
 
@@ -9,3 +11,7 @@ all: add-float #thread-id add-vector enum
 
 %: %.rs %-kernel.ptx common.rs
 	$(RUSTC) -L $(ROOT)/rust-opencl -O $<
+
+.phony: clean
+clean:
+	rm $(EXAMPLES) *.ptx

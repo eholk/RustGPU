@@ -9,14 +9,14 @@ all: submodules libOpenCL build-examples
 submodules: .gitmodules
 	git submodule update --init
 
-rustc: submodules
+rustc: 
 	mkdir -p rust/build && \
 	cd rust/build && \
 	../configure --disable-valgrind && \
 	make -j8 && \
 	cd ../../
 
-libOpenCL: submodules
+libOpenCL: 
 	make -C rust-opencl RUSTC=$(RUSTC)
 
 build-examples:
