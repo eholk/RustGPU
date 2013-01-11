@@ -4,7 +4,7 @@ use OpenCL::CL::*;
 use OpenCL::vector::Vector;
 
 fn main() {
-    let kernel_name = "_ZN10add_vector17_2950a9efd92916123_00E";
+    let kernel_name = "_ZN10add_vector17_b9e834807ab854383_00E";
 
     let ctx = create_compute_context_types([GPU]);
     let context = &ctx.ctx;
