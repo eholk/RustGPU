@@ -19,6 +19,9 @@ rustc:
 libOpenCL: 
 	make -C rust-opencl RUSTC=$(RUSTC)
 
+libOpenCL-check:
+	make -C rust-opencl RUSTC=$(RUSTC) check
+
 build-examples:
 	make -C examples RUSTC=$(RUSTC) ROOT=$(ROOT)
 

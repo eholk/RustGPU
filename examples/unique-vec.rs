@@ -1,10 +1,10 @@
 extern mod OpenCL;
 use OpenCL::hl::*;
 use OpenCL::CL::*;
-use OpenCL::vector::Vector;
+use OpenCL::vector::{Vector, Unique};
 
 fn main() {
-    let kernel_name = "add_vector";
+    let kernel_name = "add_vectors";
 
     let ctx = create_compute_context_types([GPU]);
     let context = &ctx.ctx;
@@ -14,9 +14,9 @@ fn main() {
     let B = ~[2f, 4f, 8f, 16f];
     let C = ~[mut 0f, 0f, 0f, 0f];
 
-    let Ab = Vector::from_vec(ctx, A);
-    let Bb = Vector::from_vec(ctx, B);
-    let Cb = Vector::from_vec(ctx, C);
+    let Ab = Unique::from_vec(ctx, copy A);
+    let Bb = Unique::from_vec(ctx, copy B);
+    let Cb = Unique::from_vec(ctx, C);
     
     let program = create_program_with_binary(
         context,
