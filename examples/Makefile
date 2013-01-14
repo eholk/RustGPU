@@ -1,5 +1,5 @@
 
-EXAMPLES = add-float thread-id add-vector enum map-macro
+EXAMPLES = add-float thread-id add-vector enum map-macro unique-vec
 
 # Single examples are files that do not have their kernels in a separate file.
 SINGLE_EXAMPLES = add-vector1
