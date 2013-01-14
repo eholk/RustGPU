@@ -4,7 +4,7 @@ RUSTC = $(ROOT)rust/build/x86_64-unknown-linux-gnu/stage2/bin/rustc
 
 .PHONY: submodules all libOpenCL rustc
 
-all: submodules libOpenCL build-examples
+all: submodules libOpenCL build-examples build-benchmarks
 
 submodules: .gitmodules
 	git submodule update --init
@@ -21,3 +21,6 @@ libOpenCL:
 
 build-examples:
 	make -C examples RUSTC=$(RUSTC) ROOT=$(ROOT)
+
+build-benchmarks:
+	make -C benchmarks RUSTC=$(RUSTC) ROOT=$(ROOT)
