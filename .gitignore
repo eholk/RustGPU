@@ -5,3 +5,5 @@ thread-id
 add-vector
 enum
 add-vector1
+map-macro
+unique-vec
