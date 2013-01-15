@@ -9,7 +9,7 @@ all: $(EXAMPLES) $(SINGLE_EXAMPLES)
 
 .SECONDARY:
 
-%.ptx: %.rs common.rs
+%.ptx: %.rs common.rs gpu.rs
 	$(RUSTC) --cfg gpu -L $(ROOT)/rust-opencl -Zptx -S -O --lib -Zno-asm-comments $<
 
 %: %.rs %-kernel.ptx common.rs
