@@ -16,6 +16,7 @@ fn offset(x: &float, i: uint) -> &float unsafe {
 }
 
 #[kernel]
+#[no_mangle]
 fn add_vector(x: &float, y: &float, z: &float) unsafe {
     let id = gpu::ptx_tid_x() as uint;
 
