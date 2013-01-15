@@ -1,5 +1,5 @@
 
-EXAMPLES = add-vector
+EXAMPLES = add-vector mat-mult
 
 .phony: all
 all: $(EXAMPLES)
