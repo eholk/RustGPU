@@ -15,8 +15,6 @@ fn main() {
     //let start = get_time();
 
     let ctx = create_compute_context_types([GPU]);
-    let context = &ctx.ctx;
-    let q = &ctx.q;
     
     let A = DVec();
     let B = DVec();
@@ -25,10 +23,10 @@ fn main() {
     let mut i = 0;
     let r = rand::Rng();
     while i < 16 {
-    	  A.push(r.gen_float());
-	  B.push(r.gen_float());
-	  C.push(0f);	
-	  i = i + 1;  
+    	A.push(r.gen_float());
+	    B.push(r.gen_float());
+	    C.push(0f);	
+	    i = i + 1;  
     }
 
     let mut Ah = dvec::unwrap(move A);
@@ -36,14 +34,11 @@ fn main() {
     let Bb = Vector::from_vec(ctx, dvec::unwrap(move B));
     let Cb = Vector::from_vec(ctx, dvec::unwrap(move C));
     
-    let program = create_program_with_binary(
-        context,
-        ctx.device,
-        &path::Path("mat-mult-kernel.ptx"));
+    let program = ctx.create_program_from_binary(
+        include_str!("mat-mult-kernel.ptx"));
+    program.build(ctx.device);
 
-    build_program(&program, ctx.device);
-
-    let kernel = create_kernel(&program, kernel_name);
+    let kernel = program.create_kernel(kernel_name);
 
     kernel.set_arg(0, &0);
     kernel.set_arg(1, &0);
@@ -52,12 +47,14 @@ fn main() {
     kernel.set_arg(4, &Cb);    
     kernel.set_arg(5, &4u);
 
+    info!("Starting kernel.");
     let start = get_time();
-    enqueue_nd_range_kernel(q, &kernel, 2, 0, 16, 1);
+    kernel.execute((4, 4), (1, 1));
 
     let C = Cb.to_vec();
     
     let end = get_time();
+    info!("Kernel complete.");
 
     let elapsed = end.sec * 1000000000 + end.nsec as i64 - (start.sec * 1000000000 + start.nsec as i64);
 
