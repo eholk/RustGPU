@@ -5,6 +5,12 @@ extern mod gpui {
     fn ptx_ctaid_x() -> i32;
 }
 
+#[abi = "rust-intrinsic"]
+extern mod rusti {
+    fn addr_of<T>(&&val: T) -> *T;
+    fn reinterpret_cast<T, U>(&&e: T) -> U;
+}
+
 #[device]
 #[inline(always)]
 pub fn thread_id_x() -> uint {
@@ -29,5 +35,25 @@ pub fn range<T>(start: uint, stop: uint, f: fn&(i: uint) -> T) -> Option<T> {
     }
 }
 
+#[device]
+#[inline(always)]
+pub fn reduce_into<T: Copy>(dst: &mut T,
+                            init: T,
+                            data: &[const T],
+                            f: fn&(T, T) -> T)
+{
+    if thread_id_x() == 0 {
+        let len = unsafe {
+            let v : *(*const T,uint) =
+                rusti::reinterpret_cast(rusti::addr_of(data));
+            let (_buf,len) = *v;
+            len
+        };
 
-/* reduce */
+        let mut t = init;
+        for uint::range(0, len) |i| {
+            t = f(copy t, data[i]);
+        }
+        *dst = t;
+    }
+}

@@ -7,5 +7,6 @@ examples/enum
 examples/add-vector1
 examples/map-macro
 examples/unique-vec
+examples/vector-sum
 benchmarks/add-vector
 benchmarks/mat-mult
