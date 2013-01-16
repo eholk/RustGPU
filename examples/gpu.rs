@@ -28,3 +28,6 @@ pub fn range<T>(start: uint, stop: uint, f: fn&(i: uint) -> T) -> Option<T> {
         None
     }
 }
+
+
+/* reduce */
