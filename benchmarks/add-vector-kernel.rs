@@ -2,7 +2,6 @@
 extern mod gpu {
     fn ptx_tid_x() -> i32;
     fn ptx_ctaid_x() -> i32;
-    fn ptx_nctaid_x() -> i32;
     fn ptx_ntid_x() -> i32;
 }
 
