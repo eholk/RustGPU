@@ -3,12 +3,12 @@ use OpenCL::hl::*;
 use OpenCL::CL::*;
 use OpenCL::vector::Vector;
 
-fn main() {
-    let kernel_name = "_ZN10add_vector17_b9e834807ab854383_00E";
+fn macros() {
+    include!("gpu_macros.rs")
+}
 
+fn main() {
     let ctx = create_compute_context_types([GPU]);
-    let context = &ctx.ctx;
-    let q = &ctx.q;
 
     let A = ~[1f, 2f, 3f, 4f];
     let B = ~[2f, 4f, 8f, 16f];
@@ -18,22 +18,14 @@ fn main() {
     let Bb = Vector::from_vec(ctx, B);
     let Cb = Vector::from_vec(ctx, C);
     
-    let program = create_program_with_binary(
-        context,
-        ctx.device,
-        &path::Path("add-vector-kernel.ptx"));
+    let program = ctx.create_program_from_binary(
+        include_str!("add-vector-kernel.ptx"));
+    
+    program.build(ctx.device);
 
-    build_program(&program, ctx.device);
+    let kernel = program.create_kernel("add_vector");
 
-    let kernel = create_kernel(&program, kernel_name);
-
-    kernel.set_arg(0, &0);
-    kernel.set_arg(1, &0);
-    kernel.set_arg(2, &Ab);
-    kernel.set_arg(3, &Bb);
-    kernel.set_arg(4, &Cb);    
-
-    enqueue_nd_range_kernel(q, &kernel, 1, 0, 4, 4);
+    execute!(kernel[4, 4], &Ab, &Bb, &Cb);
 
     let C = Cb.to_vec();
 

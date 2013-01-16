@@ -1,7 +1,4 @@
-#[abi = "rust-intrinsic"]
-extern mod gpu {
-    fn ptx_tid_x() -> i32;
-}
+mod gpu;
 
 #[abi = "rust-intrinsic"]
 extern mod rusti {
@@ -16,8 +13,9 @@ fn offset(x: &float, i: uint) -> &float unsafe {
 }
 
 #[kernel]
+#[no_mangle]
 fn add_vector(x: &float, y: &float, z: &float) unsafe {
-    let id = gpu::ptx_tid_x() as uint;
+    let id = gpu::thread_id_x();
 
     let x = offset(x, id);
     let y = offset(y, id);
