@@ -45,6 +45,10 @@ fn main() {
 
     benchmark(&kernel, ctx, size, Ah, Bh, Ch);
     benchmark(&kernel, ctx, size, Ah, Bh, Ch);
+    benchmark(&kernel, ctx, size, Ah, Bh, Ch);
+    benchmark(&kernel, ctx, size, Ah, Bh, Ch);
+    benchmark(&kernel, ctx, size, Ah, Bh, Ch);
+    benchmark(&kernel, ctx, size, Ah, Bh, Ch);
 }
 
 fn benchmark(kernel: &Kernel, ctx: @ComputeContext,
