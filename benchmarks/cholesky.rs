@@ -29,7 +29,7 @@ struct CholeskyKernels {
 }
 
 fn main() {
-    const N: uint = 120;
+    const N: uint = 52;
 
     info!("Generating Matrix");
     let A = gen_matrix(N);
@@ -45,6 +45,20 @@ fn main() {
         update_k: program.create_kernel("update_k"),
         update_block: program.create_kernel("update_block")
     };
+
+    info!("Kernel Stats:");
+    macro_rules! kernel_stats (
+        ($k:ident) => {
+            info!("%s: work group size = %?, local mem size = %?, private mem size = %?",
+                  stringify!($k),
+                  kernels.$k.work_group_size(),  
+                  kernels.$k.local_mem_size(),   
+                  kernels.$k.private_mem_size());
+        }
+    );
+    kernel_stats!(update_k);
+    kernel_stats!(update_kk);
+    kernel_stats!(update_block);
 
     benchmark(&A, N, &kernels, ctx);
 }
@@ -65,12 +79,17 @@ fn benchmark_one(A: &M,
     let start = precise_time_s();
 
     // Send the data to the GPU
+    info!("Matrix buffer length is %?", A.data.len());
     let A = Vector::from_vec(ctx, A.data);
 
     let copied = precise_time_s();
 
-    const block_size: uint = 16;
+    const block_size: uint = 1024;
     let num_threads = ((N + block_size - 1) / block_size) * block_size;
+
+    const block_size2: uint = 32;
+    let num_threads2 =
+        ((N + block_size2 - 1) / block_size2) * block_size2;
 
     info!("num_threads = %?, block_size = %?", num_threads, block_size);
 
@@ -86,15 +105,15 @@ fn benchmark_one(A: &M,
         execute!(update_k[num_threads, block_size],
                  &N, &A, &k);
         info!("updated_k");
-        execute!(update_block[(num_threads, num_threads),
-                              (block_size, block_size)],
+        execute!(update_block[(num_threads2, num_threads2),
+                              (block_size2, block_size2)],
                  &N, &A, &k);
         info!("updated_block");
     }
 
     let computed = precise_time_s();
 
-    let result = A.to_vec();
+    A.to_vec();
 
     let stop = precise_time_s();
 

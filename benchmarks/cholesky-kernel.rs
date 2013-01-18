@@ -28,11 +28,20 @@ struct SquareMatrix {
 
 impl SquareMatrix {
     fn get(i: uint, j: uint) -> float {
-        self.data[i * self.N + j]
+        let k = (i * self.N + j);
+        if k < self.N * self.N {
+            self.data[k]
+        }
+        else {
+            -1e9f
+        }
     }
 
     fn set(i: uint, j: uint, x: float) {
-        self.data[i * self.N + j] = x
+        let k = (i * self.N + j);
+        if k < self.N * self.N {
+            self.data[k] = x
+        }
     }
 }
 

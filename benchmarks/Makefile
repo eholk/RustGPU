@@ -1,6 +1,14 @@
 
 EXAMPLES = add-vector mat-mult cholesky
 
+ifndef RUSTC
+	RUSTC = rustc
+endif
+
+ifndef ROOT
+	ROOT = ../
+endif
+
 .phony: all
 all: $(EXAMPLES)
 
