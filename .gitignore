@@ -14,3 +14,7 @@ benchmarks/cholesky-rustcl
 benchmarks/mat-mult
 benchmarks/opencl/add-vector
 benchmarks/rust/add-vector
+benchmarks/cholesky-opencl
+benchmarks/cholesky-opencl.c
+benchmarks/cholesky_cl.h
+benchmarks/cholesky_cl.o
