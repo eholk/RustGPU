@@ -20,6 +20,7 @@ fn main() {
     let A = DVec();
     let B = DVec();
     let C = DVec();
+    let n = DVec();
 
     let r = rand::Rng();
 
@@ -29,16 +30,20 @@ fn main() {
         C.push(0f);
     }
 
+    n.push(size as uint);
+
     let start = get_time();
 
-    let mut Ah = devc::unwrap(move A);
+    let mut Ah = dvec::unwrap(move A);
     let mut Bh = dvec::unwrap(move B);
     let mut Ch = dvec::unwrap(move C);
+    let mut Nh = dvec::unwrap(move n);
 
     let Ab = Vector::from_vec(ctx, Ah);
     let Bb = Vector::from_vec(ctx, Bh);
     let Cb = Vector::from_vec(ctx, Ch);
-    
+    let Nb = Vector::from_vec(ctx, Nh);
+
     let program = ctx.create_program_from_binary(
         include_str!("add-vector-kernel.ptx"));
     
@@ -48,7 +53,7 @@ fn main() {
 
     let exec_start  = get_time();
 
-    execute!(kernel[size, 64], &Ab, &Bb, &Cb);
+    execute!(kernel[size, 64], &Ab, &Bb, &Cb, &Nb);
     
     let exec_end = get_time();
 
@@ -56,7 +61,8 @@ fn main() {
 
     let end = get_time();
 
-    //io::println(fmt!("%? + %? = %?", A, B, C));
+    //io::println(fmt!("%? + %? = %?", Ah, Bh, C));
+    
     let setup_time = exec_start.sec * 1000000000 + exec_start.nsec as i64 - (start.sec * 1000000000 + start.nsec as i64);
     let exec_time = exec_end.sec * 1000000000 + exec_end.nsec as i64 - (exec_start.sec * 1000000000 + exec_start.nsec as i64);
     let copy_to_host = end.sec * 1000000000 + end.nsec as i64 - (exec_end.sec * 1000000000 + exec_end.nsec as i64);

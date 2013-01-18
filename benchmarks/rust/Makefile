@@ -10,13 +10,13 @@ all: $(EXAMPLES)
 .SECONDARY:
 
 %.ptx: %.rs common.rs gpu.rs
-	$(RUSTC) --cfg gpu -L $(ROOT)/rust-opencl -Zptx -S -O --lib -Zno-asm-comments $<
+	$(RUSTC) --cfg gpu -L ../../rust-opencl -Zptx -S -O --lib -Zno-asm-comments $<
 
 %: %.rs %-kernel.ptx common.rs
-	$(RUSTC) -L $(ROOT)/rust-opencl -O $<
+	$(RUSTC) -L ../../rust-opencl -O $<
 
 %: %.rs %.ptx common.rs
-	$(RUSTC) --cfg no_gpu -L $(ROOT)/rust-opencl -O $<
+	$(RUSTC) --cfg no_gpu -L ../../rust-opencl -O $<
 
 .phony: clean
 clean:
