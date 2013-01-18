@@ -4,3 +4,6 @@
 [submodule "rust-opencl"]
 	path = rust-opencl
 	url = git://github.com/eholk/rust-opencl.git
+[submodule "SciRust"]
+	path = SciRust
+	url = git://github.com/eholk/SciRust.git
