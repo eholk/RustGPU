@@ -18,7 +18,7 @@ extern mod rusti {
 //}
 
 #[kernel]
-fn add_vector(x: &float, y: &float, z: &float) unsafe {
+fn add_vector(x: &float, y: &float, z: &float, n: &uint) unsafe {
     let tidx = gpu::ptx_tid_x() as uint;
     let bidx = gpu::ptx_ctaid_x() as uint;
     let ddimx = gpu::ptx_ntid_x() as uint;
@@ -27,21 +27,22 @@ fn add_vector(x: &float, y: &float, z: &float) unsafe {
     //let x = offset(x, id);
     //let y = offset(y, id);
     //let z: &mut float = rusti::reinterpret_cast(&offset(z, id));
+    if id < *n {
+	let x: &float = {
+	  let x: uint = rusti::reinterpret_cast(x);
+	  rusti::reinterpret_cast((x + id * 8))
+	};
     
-    let x: &float = {
-        let x: uint = rusti::reinterpret_cast(x);
-        rusti::reinterpret_cast((x + id * 8))
-    };
+	let y: &float = {
+	  let x: uint = rusti::reinterpret_cast(y);
+	  rusti::reinterpret_cast((x + id * 8))
+	};
     
-    let y: &float = {
-        let x: uint = rusti::reinterpret_cast(y);
-        rusti::reinterpret_cast((x + id * 8))
-    };
-    
-    let z: &mut float = {
-        let x: uint = rusti::reinterpret_cast(z);
-        rusti::reinterpret_cast((x + id * 8))
-    };
+	let z: &mut float = {
+	  let x: uint = rusti::reinterpret_cast(z);
+	  rusti::reinterpret_cast((x + id * 8))
+	};
 
-    *z = *x + *y
+	*z = *x + *y
+    }
 }
