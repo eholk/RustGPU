@@ -1,9 +1,3 @@
-EXECS=vector-add
+example: add-vector.c
+	gcc -std=c99 -o add-vector add-vector.c -I/usr/local/cuda/include -lOpenCL
 
-all=vector-add
-
-vector-add: vector-add.c
-	$(CC) -o vector-add vector-add.c -I/opt/cuda/include -lOpenCL -lm
-
-clean:
-	rm $(EXECS) *.o

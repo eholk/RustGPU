@@ -21,7 +21,59 @@ const char *kernelSource =                                      "\n" \
 "        c[id] = a[id] + b[id];                                  \n" \
 "}                                                               \n" \
   "\n" ;
+
+
+void handle_error(cl_int e) {
+#define HANDLE(x)                                                       \
+  if(e == x) {                                                        \
+    fprintf(stderr, "OpenCL Error: " #x " (%d)\n", e);              \
+    abort();\
+}
  
+  HANDLE(CL_BUILD_PROGRAM_FAILURE);
+  HANDLE(CL_COMPILER_NOT_AVAILABLE);
+  HANDLE(CL_DEVICE_NOT_FOUND);
+  HANDLE(CL_INVALID_ARG_INDEX);
+  HANDLE(CL_INVALID_ARG_SIZE);
+  HANDLE(CL_INVALID_ARG_VALUE);
+  HANDLE(CL_INVALID_BINARY);
+  HANDLE(CL_INVALID_BUILD_OPTIONS);
+  HANDLE(CL_INVALID_COMMAND_QUEUE);
+  HANDLE(CL_INVALID_CONTEXT);
+  HANDLE(CL_INVALID_DEVICE);
+  HANDLE(CL_INVALID_DEVICE_TYPE);
+  HANDLE(CL_INVALID_EVENT_WAIT_LIST);
+  HANDLE(CL_INVALID_GLOBAL_OFFSET);
+  //HANDLE(CL_INVALID_GLOBAL_WORK_SIZE);
+  HANDLE(CL_INVALID_IMAGE_SIZE);
+  HANDLE(CL_INVALID_KERNEL);
+  HANDLE(CL_INVALID_KERNEL_ARGS);
+  HANDLE(CL_INVALID_MEM_OBJECT);
+  HANDLE(CL_INVALID_OPERATION);
+  HANDLE(CL_INVALID_PLATFORM);
+  HANDLE(CL_INVALID_PROGRAM);
+  HANDLE(CL_INVALID_PROGRAM_EXECUTABLE);
+  HANDLE(CL_INVALID_QUEUE_PROPERTIES);
+  HANDLE(CL_INVALID_SAMPLER);
+  HANDLE(CL_INVALID_VALUE);
+  HANDLE(CL_INVALID_WORK_DIMENSION);
+  HANDLE(CL_INVALID_WORK_GROUP_SIZE);
+  HANDLE(CL_INVALID_WORK_ITEM_SIZE);
+  HANDLE(CL_MEM_OBJECT_ALLOCATION_FAILURE);
+  //HANDLE(CL_MISALIGNED_SUB_BUFFER_OFFSET);
+  HANDLE(CL_OUT_OF_RESOURCES);
+  HANDLE(CL_OUT_OF_HOST_MEMORY);
+
+  fprintf(stderr, "Unknown OpenCL Error: %d\n", e);
+  abort();
+}
+
+void check_status(cl_int e) {
+  if(CL_SUCCESS != e) {
+    handle_error(e);
+  }
+}
+
 int main( int argc, char* argv[] )
 {
   // Length of vectors
@@ -37,6 +89,7 @@ int main( int argc, char* argv[] )
   cl_mem d_a;
   cl_mem d_b;
   // Device output buffer
+
   cl_mem d_c;
  
   cl_platform_id cpPlatform;        // OpenCL platform
@@ -45,6 +98,7 @@ int main( int argc, char* argv[] )
   cl_command_queue queue;           // command queue
   cl_program program;               // program
   cl_kernel kernel;                 // kernel
+  cl_uint num_platforms;
  
   // Size, in bytes, of each vector
   size_t bytes = n*sizeof(double);
@@ -72,13 +126,18 @@ int main( int argc, char* argv[] )
   globalSize = ceil(n/(float)localSize)*localSize;
  
   // Bind to platform
-  err = clGetPlatformIDs(1, &cpPlatform, NULL);
- 
+  err = clGetPlatformIDs(0, NULL, &num_platforms);
+  check_status(err);
+
+  for(i = 0; i < num_platforms; i++){
+  }
+
   // Get ID for the device
   err = clGetDeviceIDs(cpPlatform, CL_DEVICE_TYPE_GPU, 1, &device_id, NULL);
- 
+  check_status(err);
+
   // Create a context  
-  context = clCreateContext(0, 1, &device_id, NULL, NULL, &err);
+  context = clCreateContext(NULL, 1, &device_id, NULL, NULL, &err);
  
   // Create a command queue 
   queue = clCreateCommandQueue(context, device_id, 0, &err);
