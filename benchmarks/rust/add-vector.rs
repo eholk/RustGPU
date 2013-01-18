@@ -40,28 +40,26 @@ fn main() {
     let mut Ah = dvec::unwrap(move A);
     let mut Bh = dvec::unwrap(move B);
     let mut Ch = dvec::unwrap(move C);
-    let mut Nh = dvec::unwrap(move n);
 
     let kernel = program.create_kernel("add_vector");
 
-    benchmark(&kernel, ctx, size, Ah, Bh, Ch, Nh);
-    benchmark(&kernel, ctx, size, Ah, Bh, Ch, Nh);
+    benchmark(&kernel, ctx, size, Ah, Bh, Ch);
+    benchmark(&kernel, ctx, size, Ah, Bh, Ch);
 }
 
 fn benchmark(kernel: &Kernel, ctx: @ComputeContext,
              size: int,
-             Ah: &[float], Bh: &[float], Ch: &[float], Nh: &[uint]) {
+             Ah: &[float], Bh: &[float], Ch: &[float]) {
 
     let start = get_time();
 
     let Ab = Vector::from_vec(ctx, Ah);
     let Bb = Vector::from_vec(ctx, Bh);
     let Cb = Vector::from_vec(ctx, Ch);
-    let Nb = Vector::from_vec(ctx, Nh);
 
     let exec_start  = get_time();
 
-    execute!(kernel[size, 64], &Ab, &Bb, &Cb, &Nb);
+    execute!(kernel[size, 64], &Ab, &Bb, &Cb, &size);
     
     let exec_end = get_time();
 
