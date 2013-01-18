@@ -3,6 +3,10 @@ extern mod gpui {
     fn ptx_tid_x() -> i32;
     fn ptx_ntid_x() -> i32;
     fn ptx_ctaid_x() -> i32;
+
+    fn ptx_tid_y() -> i32;
+    fn ptx_ntid_y() -> i32;
+    fn ptx_ctaid_y() -> i32;
 }
 
 #[abi = "rust-intrinsic"]
@@ -16,6 +20,20 @@ extern mod rusti {
 pub fn thread_id_x() -> uint {
     (gpui::ptx_ctaid_x() * gpui::ptx_ntid_x() + gpui::ptx_tid_x()) as uint
 }
+
+#[device]
+#[inline(always)]
+pub fn thread_id_y() -> uint {
+    (gpui::ptx_ctaid_y() * gpui::ptx_ntid_y() + gpui::ptx_tid_y()) as uint
+}
+
+#[device]
+#[inline(always)]
+pub fn thread_id2() -> (uint, uint) {
+    (thread_id_x(), thread_id_y())
+}
+
+
 
 // This function should return void, but instead we do polymorphism to
 // make sure it's monomorphized. Otherwise, the PTX backend can't
