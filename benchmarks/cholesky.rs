@@ -29,7 +29,7 @@ struct CholeskyKernels {
 }
 
 fn main() {
-    const N: uint = 51;
+    const N: uint = 120;
 
     info!("Generating Matrix");
     let A = gen_matrix(N);
@@ -72,20 +72,24 @@ fn benchmark_one(A: &M,
     const block_size: uint = 16;
     let num_threads = ((N + block_size - 1) / block_size) * block_size;
 
+    info!("num_threads = %?, block_size = %?", num_threads, block_size);
+
     let update_kk = &kernels.update_kk;
     let update_k = &kernels.update_k;
     let update_block = &kernels.update_block;
 
     for uint::range(0, N) |k| {
+        info!("begining iteration %?", k);
         execute!(update_kk[1, 1],
                  &N, &A, &k);
-
+        info!("updated_kk");
         execute!(update_k[num_threads, block_size],
                  &N, &A, &k);
-
+        info!("updated_k");
         execute!(update_block[(num_threads, num_threads),
                               (block_size, block_size)],
                  &N, &A, &k);
+        info!("updated_block");
     }
 
     let computed = precise_time_s();
