@@ -13,8 +13,8 @@ extern mod rusti {
 
 #[device]
 #[inline(always)]
-pub fn thread_id_x() -> uint {
-    (gpui::ptx_ctaid_x() * gpui::ptx_ntid_x() + gpui::ptx_tid_x()) as uint
+pub fn thread_id_x() -> i32 {
+    (gpui::ptx_ctaid_x() * gpui::ptx_ntid_x() + gpui::ptx_tid_x())
 }
 
 // This function should return void, but instead we do polymorphism to
@@ -22,7 +22,7 @@ pub fn thread_id_x() -> uint {
 // generate code that receives a function pointer as an argument.
 #[device]
 #[inline(always)]
-pub fn range<T>(start: uint, stop: uint, f: fn&(i: uint) -> T) -> Option<T> {
+pub fn range<T>(start: i32, stop: i32, f: fn&(i: i32) -> T) -> Option<T> {
     let range = stop - start;
 
     let i = thread_id_x();

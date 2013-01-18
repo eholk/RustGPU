@@ -7,9 +7,9 @@ extern mod rusti {
 }
 
 #[device]
-fn offset(x: &float, i: uint) -> &float unsafe {
+fn offset(x: &float, i: i32) -> &float unsafe {
     let x: uint = rusti::reinterpret_cast(x);
-    rusti::reinterpret_cast((x + i * 8))
+    rusti::reinterpret_cast((x as i32 + i * 8) as uint)
 }
 
 #[kernel]
@@ -21,7 +21,7 @@ fn add_vector(x: &float, y: &float, z: &float, n: &uint) unsafe {
     let y = offset(y, id);
     let z: &mut float = rusti::reinterpret_cast(offset(z, id));
 
-    if id < *n {
+    if id < (*n as i32) {
 	*z = *x + *y
     }
 }
