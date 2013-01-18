@@ -10,7 +10,7 @@ ifndef ROOT
 endif
 
 .phony: all
-all: $(EXAMPLES)
+all: $(EXAMPLES) cholesky-rustcl
 
 .SECONDARY:
 
@@ -19,6 +19,9 @@ all: $(EXAMPLES)
 
 %: %.rs %-kernel.ptx common.rs
 	$(RUSTC) -L $(ROOT)/rust-opencl -O $<
+
+cholesky-rustcl: cholesky-rustcl.rs cholesky.cl
+	$(RUSTC) -L $(ROOT)/rust-opencl -O cholesky-rustcl.rs
 
 .phony: clean
 clean:

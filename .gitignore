@@ -10,4 +10,7 @@ examples/unique-vec
 examples/vector-sum
 benchmarks/add-vector
 benchmarks/cholesky
+benchmarks/cholesky-rustcl
 benchmarks/mat-mult
+benchmarks/opencl/add-vector
+benchmarks/rust/add-vector
