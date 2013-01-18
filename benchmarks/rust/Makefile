@@ -1,5 +1,5 @@
 
-EXAMPLES = add-vector
+EXAMPLES = add-vector mat-mult
 
 # Single examples are files that do not have their kernels in a separate file.
 SINGLE_EXAMPLES = add-vector1
