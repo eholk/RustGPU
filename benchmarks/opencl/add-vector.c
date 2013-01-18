@@ -215,6 +215,8 @@ int main(int argc, char *argv[]) {
     check_status(status);
     //printf("Copied y.\n");
     
+    clock_gettime(CLOCK_REALTIME, &exec_start);
+
     // Set the kernel arguments
     // x
     status = clSetKernelArg(kernel,
@@ -248,8 +250,6 @@ int main(int argc, char *argv[]) {
 			    &size); // use z's cl_mem object, instead of
     // z directly.
     check_status(status);
-
-    clock_gettime(CLOCK_REALTIME, &exec_start);
 
     // Do to kernel
     cl_event event;
