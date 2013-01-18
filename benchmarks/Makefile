@@ -1,5 +1,5 @@
 
-EXAMPLES = add-vector mat-mult
+EXAMPLES = add-vector mat-mult cholesky
 
 .phony: all
 all: $(EXAMPLES)
