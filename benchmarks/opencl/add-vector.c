@@ -74,31 +74,36 @@ int main(int argc, char *argv[]) {
     status = clGetPlatformIDs(nPlatforms, platforms, &nPlatforms);
     check_status(status);
 
-    // Pick the first platform.
-    g_platform = platforms[0];
-
-    // Find out how many devices there are.
+    // Find a device. This may involve checking multiple platforms.
     cl_uint n_dev = 0;
-    cl_device_type type =
-        CL_DEVICE_TYPE_GPU |
-        CL_DEVICE_TYPE_CPU |
-        CL_DEVICE_TYPE_ACCELERATOR;
-    status = clGetDeviceIDs(g_platform, type, CL_UINT_MAX, NULL, &n_dev);
-    check_status(status);
-
-    //printf("Found %d devices.\n", n_dev);
-
-    // Allocate space for the device IDs
     cl_device_id *devices = NULL;
-    devices = calloc(n_dev, sizeof(cl_device_id));
+    for(int i = 0; i < nPlatforms; ++i) {
+        // Pick the first platform.
+        g_platform = platforms[i];
 
-    // Get the device IDs
-    status = clGetDeviceIDs(g_platform, type, CL_UINT_MAX,
-                            devices, &n_dev);
-    check_status(status);
+        // Find out how many devices there are.
+        cl_device_type type =
+            CL_DEVICE_TYPE_GPU |
+            CL_DEVICE_TYPE_ACCELERATOR;
+        status = clGetDeviceIDs(g_platform, type, CL_UINT_MAX, NULL, &n_dev);
+        if(status == CL_DEVICE_NOT_FOUND) {
+            continue;
+        }
+        check_status(status);
 
-    // Arbitrarily pick the first device.
-    g_device = devices[0];
+        //printf("Found %d devices.\n", n_dev);
+
+        // Allocate space for the device IDs
+        devices = calloc(n_dev, sizeof(cl_device_id));
+
+        // Get the device IDs
+        status = clGetDeviceIDs(g_platform, type, CL_UINT_MAX,
+                                devices, &n_dev);
+        check_status(status);
+
+        // Arbitrarily pick the first device.
+        g_device = devices[0];
+    }
 
     // Create a context for the devices.
     g_context = clCreateContext(0, n_dev, devices,

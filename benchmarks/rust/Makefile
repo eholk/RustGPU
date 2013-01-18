@@ -1,3 +1,6 @@
+ifndef RUSTC
+	RUSTC = rustc
+endif
 
 EXAMPLES = add-vector
 
