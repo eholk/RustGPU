@@ -13,7 +13,7 @@
 
 void handle_error(cl_int e);
 void check_status(cl_int e);
-void print_vector(float *x, int len);
+void print_vector(double *x, int len);
 
 cl_platform_id g_platform;
 cl_device_id g_device;
@@ -23,9 +23,11 @@ cl_command_queue g_queue;
 
 // z = y + y
 const char *g_prog_src = 
-    "__kernel void add_vectors(__global __read_only float *x,"
-    "                          __global __read_only float *y,"
-    "                          __global __write_only float *z,"
+    "#pragma OPENCL EXTENSION cl_khr_fp64 : enable \n"
+    ""
+    "__kernel void add_vectors(__global __read_only double *x,"
+    "                          __global __read_only double *y,"
+    "                          __global __write_only double *z,"
     "                          const unsigned int n)"
     "{"
     "    int i = get_global_id(0);"
@@ -45,9 +47,9 @@ int main(int argc, char *argv[]) {
       size = atoi(argv[1]);
     }
 
-    float *x = (float*)malloc(size * sizeof(float));
-    float *y = (float*)malloc(size * sizeof(float));
-    float *z = (float*)malloc(size * sizeof(float));
+    double *x = (double*)malloc(size * sizeof(double));
+    double *y = (double*)malloc(size * sizeof(double));
+    double *z = (double*)malloc(size * sizeof(double));
     
     for(int i = 0; i < size; i++){
       x[i] = sinf(i) * sinf(i);
@@ -147,21 +149,21 @@ int main(int argc, char *argv[]) {
     // And create memory buffers.
     cl_mem clx = clCreateBuffer(g_context,
                                 CL_MEM_READ_ONLY,
-                                (size * sizeof(float)),
+                                (size * sizeof(double)),
                                 NULL, // host pointer...
                                 &status);
     check_status(status);
 
     cl_mem cly = clCreateBuffer(g_context,
                                 CL_MEM_READ_ONLY,
-                                (size * sizeof(float)),
+                                (size * sizeof(double)),
                                 NULL, // host pointer...
                                 &status);
     check_status(status);
 
     cl_mem clz = clCreateBuffer(g_context,
                                 CL_MEM_WRITE_ONLY,
-                                (size * sizeof(float)),
+                                (size * sizeof(double)),
                                 NULL, // host pointer...
                                 &status);
 
@@ -315,7 +317,7 @@ int main(int argc, char *argv[]) {
     return 0;
 }
 
-void print_vector(float *x, int len) {
+void print_vector(double *x, int len) {
   printf("[");
   for(int i = 0; i < len; ++i) {
 	printf(" %f", x[i]);
@@ -354,6 +356,7 @@ void handle_error(cl_int e) {
     HANDLE(CL_INVALID_IMAGE_SIZE);
     HANDLE(CL_INVALID_KERNEL);
     HANDLE(CL_INVALID_KERNEL_ARGS);
+    HANDLE(CL_INVALID_KERNEL_NAME);
 	HANDLE(CL_INVALID_MEM_OBJECT);
     HANDLE(CL_INVALID_OPERATION);
     HANDLE(CL_INVALID_PLATFORM);
