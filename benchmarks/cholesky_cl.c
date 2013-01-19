@@ -302,32 +302,31 @@ void cholesky(uint64_t N, double *data) {
 
         // update_block
         {
-            //printf("update_k\n");
-            status = clSetKernelArg(update_k,
+            status = clSetKernelArg(update_block,
                                     0,
                                     sizeof(cl_mem),
                                     NULL);
             check_status(status);
             
-            status = clSetKernelArg(update_k,
+            status = clSetKernelArg(update_block,
                                 1,
                                     sizeof(cl_mem),
                                     NULL);
             check_status(status);
             
-            status = clSetKernelArg(update_k,
+            status = clSetKernelArg(update_block,
                                     2,
                                     sizeof(N),
                                     &N);
             check_status(status);
         
-            status = clSetKernelArg(update_k,
+            status = clSetKernelArg(update_block,
                                     3,
                                     sizeof(cl_mem),
                                     &cldata);
             check_status(status);
             
-            status = clSetKernelArg(update_k,
+            status = clSetKernelArg(update_block,
                                     4,
                                     sizeof(k),
                                     &k);
@@ -338,7 +337,7 @@ void cholesky(uint64_t N, double *data) {
             size_t global_size[] = {round_up(N, local_size[0]),
                                   round_up(N, local_size[1])};
             status = clEnqueueNDRangeKernel(g_queue,
-                                            update_k,
+                                            update_block,
                                             2, // one dimensional
                                             NULL, // must be NULL
                                             global_size,
