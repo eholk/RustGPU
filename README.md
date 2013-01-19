@@ -1,4 +1,4 @@
-B649 Final Project: Compiling Rust for GPUs
+Compiling Rust for GPUs
 ==========
 
 This repository contains a proof of concept for writing GPU kernels in Rust. The NVPTX LLVM backend is used to translate Rust code into PTX code for execution on the GPU. OpenCL is used to handle memory allocation, data transfer and kernel invocation.
