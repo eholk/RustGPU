@@ -119,9 +119,12 @@ fn benchmark_one(A: &M,
 
     let stop = precise_time_s();
 
+    let execution = computed - copied;
+    let transfer = stop - start - execution;
+
     io::println(fmt!("%?\t%?",
-                     computed - copied,
-                     stop - start));
+                     execution,
+                     transfer));
 }
 
 fn gen_matrix(N: uint) -> M {
