@@ -57,7 +57,7 @@ int main(int argc, char *argv[]) {
       z[i] = 0.;
     }
 
-    clock_gettime(CLOCK_REALTIME, &start);
+    
     // Find the platforms
     cl_platform_id *platforms = NULL;
     cl_uint nPlatforms = 0;
@@ -143,9 +143,25 @@ int main(int argc, char *argv[]) {
     check_status(status);
     
     //printf("Built program.\n");
+        // Create the kernel
+    cl_kernel kernel = clCreateKernel(g_program,
+                                      "add_vectors",
+                                      &status);
+    check_status(status);
+
+    //printf("Created kernel.\n");
+
+    // Create the command queue
+    g_queue =
+      clCreateCommandQueue(g_context,
+			   g_device,
+			   0, // flags, such as
+			   // CL_QUEUE_OUT_OF_ORDER_EXEC_MODE_ENABLED
+			   &status);
+    check_status(status);
 
     // Now we'll set up some vectors to get ready for the kernel.
-
+    clock_gettime(CLOCK_REALTIME, &start);
     // And create memory buffers.
     cl_mem clx = clCreateBuffer(g_context,
                                 CL_MEM_READ_ONLY,
@@ -171,22 +187,6 @@ int main(int argc, char *argv[]) {
 
     //printf("Created buffers.\n");
 
-    // Create the kernel
-    cl_kernel kernel = clCreateKernel(g_program,
-                                      "add_vectors",
-                                      &status);
-    check_status(status);
-
-    //printf("Created kernel.\n");
-
-    // Create the command queue
-    g_queue =
-      clCreateCommandQueue(g_context,
-			   g_device,
-			   0, // flags, such as
-			   // CL_QUEUE_OUT_OF_ORDER_EXEC_MODE_ENABLED
-			   &status);
-    check_status(status);
     
     //printf("Created command queue.\n");
     
