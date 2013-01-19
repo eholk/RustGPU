@@ -26,4 +26,4 @@ We current have four examples:
 1. `add-float` demonstrates adding a single floating point number on the GPU. This is about the simplest possible kernel of any interest.
 2. `thread-id` demonstrates the use of Rust intrinsics to determine the current thread id. Without vector indexing, however, there is still only one thread with observable effects.
 3. `enum` demonstrates the use of Rust `enum` types. This shows that Rust on the GPU can handle more than just simple scalar data types.
-4. `add-vector` shows how to compute on multiple elements of an array. This uses unsafe pointers and raw pointer arithmetic. Furthermore, it currently requires manually modification of the generated PTX because Rust does not yet generate the correct address space for unsafe pointer types. This example primarily shows it is possible to process multiple data elements, although clearly the language support needs to be greatly improved.
+4. `add-vector` shows how to compute on multiple elements of an array. This uses unsafe pointers and raw pointer arithmetic.
