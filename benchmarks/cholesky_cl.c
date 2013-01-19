@@ -7,8 +7,9 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <math.h>
-#include <time.h>
 #include <linux/time.h>
+#include <time.h>
+#include <inttypes.h>
 
 #include "cholesky_cl.h"
 
@@ -23,6 +24,27 @@ cl_device_id g_device;
 cl_context g_context;
 cl_program g_program;
 cl_command_queue g_queue;
+
+uint64_t nanotime() {
+#ifdef __APPLE__
+    uint64_t time = mach_absolute_time();
+    mach_timebase_info_data_t info = {0, 0};
+    if (info.denom == 0) {
+        mach_timebase_info(&info);
+    }
+    uint64_t time_nano = time * (info.numer / info.denom);
+    return time_nano;  
+#else
+    uint64_t ns_per_s = 1000000000LL;
+    struct timespec ts;
+    clock_gettime(CLOCK_MONOTONIC, &ts);
+    return (ts.tv_sec * ns_per_s + ts.tv_nsec);
+#endif    
+}
+
+double time_s() {
+    return nanotime() / 1e9;
+}
 
 void cholesky_init() {
     cl_int status;
@@ -143,7 +165,7 @@ void cholesky(uint64_t N, double *data) {
 
     // Create buffers and copy data
 
-    // TODO: Start timer
+    double start = time_s();
 
     cl_mem cldata = clCreateBuffer(g_context,
                                    CL_MEM_READ_ONLY,
@@ -165,11 +187,11 @@ void cholesky(uint64_t N, double *data) {
 
     // Do the computation
 
-    // TODO: Start timer again.
+    double compute_start = time_s();
 
     for(uint64_t k = 0; k < N; ++k) {
+        // update_kk
         {
-            // update_kk
             //printf("update_kk\n");
             status = clSetKernelArg(update_kk,
                                     0,
@@ -202,8 +224,8 @@ void cholesky(uint64_t N, double *data) {
             check_status(status);
 
             cl_event event;
-            size_t local_size = 1024;
-            size_t global_size = round_up(N, local_size);
+            size_t local_size = 1;
+            size_t global_size = 1;
             status = clEnqueueNDRangeKernel(g_queue,
                                             update_kk,
                                             1, // one dimensional
@@ -221,19 +243,138 @@ void cholesky(uint64_t N, double *data) {
             check_status(status);
             clReleaseEvent(event);
 
-    }
+        }
 
         // update_k
+        {
+            //printf("update_k\n");
+            status = clSetKernelArg(update_k,
+                                    0,
+                                    sizeof(cl_mem),
+                                    NULL);
+            check_status(status);
+            
+            status = clSetKernelArg(update_k,
+                                1,
+                                    sizeof(cl_mem),
+                                    NULL);
+            check_status(status);
+            
+            status = clSetKernelArg(update_k,
+                                    2,
+                                    sizeof(N),
+                                    &N);
+            check_status(status);
+        
+            status = clSetKernelArg(update_k,
+                                    3,
+                                    sizeof(cl_mem),
+                                    &cldata);
+            check_status(status);
+            
+            status = clSetKernelArg(update_k,
+                                    4,
+                                    sizeof(k),
+                                    &k);
+            check_status(status);
+
+            cl_event event;
+            size_t local_size = 1024;
+            size_t global_size = round_up(N, local_size);
+            status = clEnqueueNDRangeKernel(g_queue,
+                                            update_k,
+                                            1, // one dimensional
+                                            NULL, // must be NULL
+                                            &global_size,
+                                            &local_size,
+                                            0, // wait on no events
+                                            NULL, // no event wait list
+                                            &event); // the event we use to
+            // tell when this kernel is done.
+            check_status(status);
+
+            status = clWaitForEvents(1, // one event
+                                     &event);
+            check_status(status);
+            clReleaseEvent(event);
+            
+        }
 
         // update_block
+        {
+            //printf("update_k\n");
+            status = clSetKernelArg(update_k,
+                                    0,
+                                    sizeof(cl_mem),
+                                    NULL);
+            check_status(status);
+            
+            status = clSetKernelArg(update_k,
+                                1,
+                                    sizeof(cl_mem),
+                                    NULL);
+            check_status(status);
+            
+            status = clSetKernelArg(update_k,
+                                    2,
+                                    sizeof(N),
+                                    &N);
+            check_status(status);
         
+            status = clSetKernelArg(update_k,
+                                    3,
+                                    sizeof(cl_mem),
+                                    &cldata);
+            check_status(status);
+            
+            status = clSetKernelArg(update_k,
+                                    4,
+                                    sizeof(k),
+                                    &k);
+            check_status(status);
+
+            cl_event event;
+            size_t local_size[] = {32, 32};
+            size_t global_size[] = {round_up(N, local_size[0]),
+                                  round_up(N, local_size[1])};
+            status = clEnqueueNDRangeKernel(g_queue,
+                                            update_k,
+                                            2, // one dimensional
+                                            NULL, // must be NULL
+                                            global_size,
+                                            local_size,
+                                            0, // wait on no events
+                                            NULL, // no event wait list
+                                            &event); // the event we use to
+            // tell when this kernel is done.
+            check_status(status);
+
+            status = clWaitForEvents(1, // one event
+                                     &event);
+            check_status(status);
+            clReleaseEvent(event);
+            
+        }
     }
 
-    // TODO: Stop timer
+    double compute_stop = time_s();
 
     // Read the results
+    status = clEnqueueReadBuffer(g_queue,
+                                 cldata,
+                                 CL_TRUE,
+                                 0,
+                                 byte_size,
+                                 data,
+                                 0,
+                                 NULL,
+                                 NULL);
+    check_status(status);
 
-    // TODO: Stop timer again
+    double stop = time_s();
+
+    // Print the results
+    printf("%lf\t%lf\n", compute_stop - compute_start, stop - start);
 }
 
 void print_vector(double *x, int len) {
