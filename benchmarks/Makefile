@@ -12,7 +12,7 @@ endif
 CFLAGS = -std=c99 -g -O3
 
 .phony: all
-all: $(EXAMPLES) cholesky-rustcl cholesky-opencl jacobi-rustcl
+all: $(EXAMPLES) cholesky-rustcl cholesky-opencl jacobi-rustcl jacobi-opencl
 
 .SECONDARY:
 
@@ -35,6 +35,14 @@ cholesky_cl.o: cholesky_cl.h cholesky_cl.c
 
 jacobi-rustcl: jacobi-rustcl.rs jacobi.cl
 	$(RUSTC) -L $(ROOT)/rust-opencl -O jacobi-rustcl.rs
+
+jacobi-opencl: jacobi-opencl.rs jacobi_cl.o
+	$(RUSTC) -L $(ROOT)/rust-opencl -O jacobi-opencl.rs
+
+jacobi_cl.h: jacobi.cl
+	xxd -i jacobi.cl > jacobi_cl.h
+
+jacobi_cl.o: jacobi_cl.h jacobi_cl.c
 
 .phony: clean
 clean:

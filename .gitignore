@@ -1,4 +1,6 @@
 *~
+*.csv
+*.o
 *.ptx
 examples/add-float
 examples/thread-id
@@ -18,3 +20,7 @@ benchmarks/cholesky-opencl
 benchmarks/cholesky-opencl.c
 benchmarks/cholesky_cl.h
 benchmarks/cholesky_cl.o
+benchmarks/jacobi
+benchmarks/jacobi-opencl
+benchmarks/jacobi-rustcl
+benchmarks/jacobi_cl.h
