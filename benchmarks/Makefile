@@ -1,5 +1,5 @@
 
-EXAMPLES = add-vector mat-mult cholesky
+EXAMPLES = add-vector mat-mult cholesky jacobi
 
 ifndef RUSTC
 	RUSTC = rustc

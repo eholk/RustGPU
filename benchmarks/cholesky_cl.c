@@ -376,7 +376,7 @@ void cholesky(uint64_t N, double *data) {
     // Print the results
     double execution = compute_stop - compute_start;
     double transfer = stop - start - execution;
-    printf("%lf\t%lf\n", execution, transfer);
+    printf("%lu\t%lf\t%lf\n", N, execution, transfer);
 }
 
 void print_vector(double *x, int len) {

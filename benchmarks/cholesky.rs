@@ -122,7 +122,8 @@ fn benchmark_one(A: &M,
     let execution = computed - copied;
     let transfer = stop - start - execution;
 
-    io::println(fmt!("%?\t%?",
+    io::println(fmt!("%?\t%f\t%f",
+                     N,
                      execution,
                      transfer));
 }
