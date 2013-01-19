@@ -9,7 +9,7 @@ ifndef ROOT
 	ROOT = ../
 endif
 
-CFLAGS = -std=c99 -g
+CFLAGS = -std=c99 -g -O3
 
 .phony: all
 all: $(EXAMPLES) cholesky-rustcl cholesky-opencl

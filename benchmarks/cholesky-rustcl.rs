@@ -29,7 +29,7 @@ struct CholeskyKernels {
 }
 
 fn main() {
-    const N: uint = 1200;
+    let N = core::from_str::FromStr::from_str::<uint>(os::args()[1]).get();
 
     info!("Generating Matrix");
     let A = gen_matrix(N);

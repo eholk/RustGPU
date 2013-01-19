@@ -25,7 +25,7 @@ fn macros() {
 type M = Matrix<float>;
 
 fn main() {
-    const N: uint = 1200;
+    let N = core::from_str::FromStr::from_str::<uint>(os::args()[1]).get();
 
     ocl::cholesky_init();
 

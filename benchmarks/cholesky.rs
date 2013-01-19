@@ -1,4 +1,6 @@
 
+use core::from_str::FromStr;
+
 extern mod std;
 use std::time::precise_time_s;
 
@@ -29,7 +31,7 @@ struct CholeskyKernels {
 }
 
 fn main() {
-    const N: uint = 1200;
+    let N = FromStr::from_str::<uint>(os::args()[1]).get();
 
     info!("Generating Matrix");
     let A = gen_matrix(N);

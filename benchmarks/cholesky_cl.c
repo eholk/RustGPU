@@ -78,7 +78,8 @@ void cholesky_init() {
         cl_device_type type =
             CL_DEVICE_TYPE_GPU |
             CL_DEVICE_TYPE_ACCELERATOR;
-        status = clGetDeviceIDs(g_platform, type, CL_UINT_MAX, NULL, &n_dev);
+        status = clGetDeviceIDs(g_platform, type,
+                                CL_UINT_MAX, NULL, &n_dev);
         if(status == CL_DEVICE_NOT_FOUND) {
             continue;
         }
@@ -289,8 +290,7 @@ void cholesky(uint64_t N, double *data) {
                                             &local_size,
                                             0, // wait on no events
                                             NULL, // no event wait list
-                                            &event); // the event we use to
-            // tell when this kernel is done.
+                                            &event);
             check_status(status);
 
             status = clWaitForEvents(1, // one event
